@@ -29,6 +29,9 @@ describe('API client', () => {
 
     expect(mockedAxios.get).toHaveBeenCalledWith(
       'http://localhost:4000/api/employees',
+      {
+        params: undefined,
+      },
     );
 
     expect(result.total).toBe(0);

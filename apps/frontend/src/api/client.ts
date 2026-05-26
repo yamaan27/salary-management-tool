@@ -2,8 +2,17 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:4000/api';
 
-export async function fetchEmployees() {
-  const response = await axios.get(`${API_BASE_URL}/employees`);
+type FetchEmployeesParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  country?: string;
+};
+
+export async function fetchEmployees(params?: FetchEmployeesParams) {
+  const response = await axios.get(`${API_BASE_URL}/employees`, {
+    params,
+  });
 
   return response.data;
 }

@@ -15,10 +15,27 @@ export function EmployeeDashboard() {
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
-  async function loadEmployees() {
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+
+  async function loadEmployees(
+    overrides?: Partial<{
+      page: number;
+      search: string;
+    }>,
+  ) {
     setLoading(true);
 
-    const response = await fetchEmployees();
+    const nextPage = overrides?.page ?? page;
+    const nextSearch = overrides?.search ?? search;
+
+    const response = await fetchEmployees({
+      page: nextPage,
+      limit,
+      search: nextSearch,
+    });
 
     setEmployees(response.data);
     setLoading(false);
@@ -49,6 +66,36 @@ export function EmployeeDashboard() {
     setEditingEmployee(employee);
   }
 
+  async function handleSearch() {
+    setPage(1);
+    setSearch(searchInput);
+
+    await loadEmployees({
+      page: 1,
+      search: searchInput,
+    });
+  }
+
+  async function handleNextPage() {
+    const nextPage = page + 1;
+    setPage(nextPage);
+
+    await loadEmployees({
+      page: nextPage,
+    });
+  }
+
+  async function handlePreviousPage() {
+    if (page === 1) return;
+
+    const previousPage = page - 1;
+    setPage(previousPage);
+
+    await loadEmployees({
+      page: previousPage,
+    });
+  }
+
   useEffect(() => {
     loadEmployees();
   }, []);
@@ -61,6 +108,16 @@ export function EmployeeDashboard() {
     <div>
       <h1>Employee Dashboard</h1>
 
+      <div>
+        <input
+          placeholder="Search employees"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+        />
+
+        <button onClick={handleSearch}>Search</button>
+      </div>
+
       <EmployeeForm
         onSubmit={handleSubmit}
         initialValues={editingEmployee ?? undefined}
@@ -71,6 +128,14 @@ export function EmployeeDashboard() {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+
+      <div>
+        <button onClick={handlePreviousPage}>Previous</button>
+
+        <span>Page {page}</span>
+
+        <button onClick={handleNextPage}>Next</button>
+      </div>
     </div>
   );
 }
