@@ -16,7 +16,8 @@ export function EmployeeDashboard() {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   const [page, setPage] = useState(1);
-  const [limit] = useState(20);
+  const limit = 20;
+
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
@@ -112,10 +113,12 @@ export function EmployeeDashboard() {
         <input
           placeholder="Search employees"
           value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(event) => setSearchInput(event.target.value)}
         />
 
-        <button onClick={handleSearch}>Search</button>
+        <button type="button" onClick={handleSearch}>
+          Search
+        </button>
       </div>
 
       <EmployeeForm
@@ -130,11 +133,15 @@ export function EmployeeDashboard() {
       />
 
       <div>
-        <button onClick={handlePreviousPage}>Previous</button>
+        <button type="button" onClick={handlePreviousPage}>
+          Previous
+        </button>
 
         <span>Page {page}</span>
 
-        <button onClick={handleNextPage}>Next</button>
+        <button type="button" onClick={handleNextPage}>
+          Next
+        </button>
       </div>
     </div>
   );
