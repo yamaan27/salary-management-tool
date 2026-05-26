@@ -1,19 +1,28 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { employeeFormSchema, EmployeeFormValues } from './employeeForm.schema';
 
 interface EmployeeFormProps {
   onSubmit: (data: EmployeeFormValues) => void;
+  initialValues?: Partial<EmployeeFormValues>;
 }
 
-export function EmployeeForm({ onSubmit }: EmployeeFormProps) {
+export function EmployeeForm({ onSubmit, initialValues }: EmployeeFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
   });
+
+  useEffect(() => {
+    if (initialValues) {
+      reset(initialValues as EmployeeFormValues);
+    }
+  }, [initialValues, reset]);
 
   return (
     <form
@@ -36,25 +45,21 @@ export function EmployeeForm({ onSubmit }: EmployeeFormProps) {
       <div>
         <label htmlFor="jobTitle">Job Title</label>
         <input id="jobTitle" {...register('jobTitle')} />
-        {errors.jobTitle && <p>{errors.jobTitle.message}</p>}
       </div>
 
       <div>
         <label htmlFor="department">Department</label>
         <input id="department" {...register('department')} />
-        {errors.department && <p>{errors.department.message}</p>}
       </div>
 
       <div>
         <label htmlFor="country">Country</label>
         <input id="country" {...register('country')} />
-        {errors.country && <p>{errors.country.message}</p>}
       </div>
 
       <div>
         <label htmlFor="salary">Salary</label>
         <input id="salary" type="number" {...register('salary')} />
-        {errors.salary && <p>{errors.salary.message}</p>}
       </div>
 
       <div>
@@ -79,7 +84,6 @@ export function EmployeeForm({ onSubmit }: EmployeeFormProps) {
       <div>
         <label htmlFor="dateOfJoining">Date of Joining</label>
         <input id="dateOfJoining" type="date" {...register('dateOfJoining')} />
-        {errors.dateOfJoining && <p>{errors.dateOfJoining.message}</p>}
       </div>
 
       <button type="submit">Save</button>

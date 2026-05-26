@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { fetchEmployees, createEmployee } from '../api/client';
+import {
+  fetchEmployees,
+  createEmployee,
+  updateEmployee,
+  deleteEmployee,
+} from '../api/client';
 import { Employee } from '../types/employee';
 import { EmployeeTable } from '../components/employee/EmployeeTable';
 import { EmployeeForm } from '../components/employee/EmployeeForm';
@@ -8,6 +13,7 @@ import { EmployeeFormValues } from '../components/employee/employeeForm.schema';
 export function EmployeeDashboard() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   async function loadEmployees() {
     setLoading(true);
@@ -18,13 +24,29 @@ export function EmployeeDashboard() {
     setLoading(false);
   }
 
-  async function handleCreateEmployee(payload: EmployeeFormValues) {
-    await createEmployee({
+  async function handleSubmit(payload: EmployeeFormValues) {
+    const finalPayload = {
       ...payload,
       currency: 'INR',
-    });
+    };
+
+    if (editingEmployee) {
+      await updateEmployee(editingEmployee.id, finalPayload);
+      setEditingEmployee(null);
+    } else {
+      await createEmployee(finalPayload);
+    }
 
     await loadEmployees();
+  }
+
+  async function handleDelete(id: string) {
+    await deleteEmployee(id);
+    await loadEmployees();
+  }
+
+  function handleEdit(employee: Employee) {
+    setEditingEmployee(employee);
   }
 
   useEffect(() => {
@@ -39,12 +61,15 @@ export function EmployeeDashboard() {
     <div>
       <h1>Employee Dashboard</h1>
 
-      <EmployeeForm onSubmit={handleCreateEmployee} />
+      <EmployeeForm
+        onSubmit={handleSubmit}
+        initialValues={editingEmployee ?? undefined}
+      />
 
       <EmployeeTable
         employees={employees}
-        onEdit={() => {}}
-        onDelete={() => {}}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );
