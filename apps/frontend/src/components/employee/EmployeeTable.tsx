@@ -2,9 +2,15 @@ import { Employee } from '../../types/employee';
 
 interface EmployeeTableProps {
   employees: Employee[];
+  onEdit: (employee: Employee) => void;
+  onDelete: (id: string) => void;
 }
 
-export function EmployeeTable({ employees }: EmployeeTableProps) {
+export function EmployeeTable({
+  employees,
+  onEdit,
+  onDelete,
+}: EmployeeTableProps) {
   return (
     <table>
       <thead>
@@ -14,6 +20,7 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
           <th>Job Title</th>
           <th>Country</th>
           <th>Salary</th>
+          <th>Actions</th>
         </tr>
       </thead>
 
@@ -26,6 +33,15 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
             <td>{employee.country}</td>
             <td>
               {employee.currency} {employee.salary}
+            </td>
+            <td>
+              <button type="button" onClick={() => onEdit(employee)}>
+                Edit
+              </button>
+
+              <button type="button" onClick={() => onDelete(employee.id)}>
+                Delete
+              </button>
             </td>
           </tr>
         ))}

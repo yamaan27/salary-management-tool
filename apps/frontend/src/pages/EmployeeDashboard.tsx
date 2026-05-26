@@ -41,7 +41,11 @@ export function EmployeeDashboard() {
 
       <EmployeeForm onSubmit={handleCreateEmployee} />
 
-      <EmployeeTable employees={employees} />
+      <EmployeeTable
+        employees={employees}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
     </div>
   );
 }
