@@ -2,14 +2,17 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
+    "moduleResolution": "node",
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "types": ["node", "jest"],
     "baseUrl": ".",
     "paths": {
       "@salary/shared": ["../../packages/shared/src"]
     }
-  }
+  },
+  "include": ["src/**/*"]
 }
