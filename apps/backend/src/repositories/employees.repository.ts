@@ -1,4 +1,8 @@
-import { CreateEmployeeInput } from '@salary/shared';
+import {
+  CreateEmployeeInput,
+  EmploymentType,
+  EmployeeStatus,
+} from '@salary/shared';
 
 export interface Employee {
   id: string;
@@ -10,10 +14,10 @@ export interface Employee {
   country: string;
   salary: number;
   currency: string;
-  employmentType: string;
+  employmentType: EmploymentType;
   dateOfJoining: string;
   managerName?: string;
-  status: string;
+  status: EmployeeStatus;
   createdAt: Date;
   updatedAt: Date;
 }
