@@ -22,7 +22,7 @@ const EMPLOYMENT_TYPES = ['FULL_TIME', 'CONTRACT', 'INTERN'] as const;
 
 const STATUSES = ['ACTIVE', 'INACTIVE'] as const;
 
-function deterministicPick<T>(items: T[], index: number): T {
+function deterministicPick<T>(items: readonly T[], index: number): T {
   return items[index % items.length];
 }
 
@@ -30,12 +30,12 @@ function deterministicSalary(index: number): number {
   return 500000 + (index % 25) * 100000;
 }
 
-function deterministicJoinDate(index: number): string {
+function deterministicJoinDate(index: number): Date {
   const year = 2020 + (index % 5);
-  const month = String((index % 12) + 1).padStart(2, '0');
-  const day = String((index % 28) + 1).padStart(2, '0');
+  const month = index % 12;
+  const day = (index % 28) + 1;
 
-  return `${year}-${month}-${day}`;
+  return new Date(year, month, day);
 }
 
 export function generateEmployees({
@@ -47,21 +47,19 @@ export function generateEmployees({
     const firstName = deterministicPick(firstNames, index);
     const lastName = deterministicPick(lastNames, index * 7);
 
-    const fullName = `${firstName} ${lastName}`;
-
     return {
       employeeId: `EMP${String(index + 1).padStart(6, '0')}`,
-      fullName,
-      email: `${firstName.toLowerCase()}.${lastName.toLowerCase}.${index}@example.com`,
+      fullName: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index}@example.com`,
       jobTitle: deterministicPick(JOB_TITLES, index),
       department: deterministicPick(DEPARTMENTS, index),
       country: deterministicPick(COUNTRIES, index),
       salary: deterministicSalary(index),
       currency: 'INR',
-      employmentType: deterministicPick([...EMPLOYMENT_TYPES], index),
+      employmentType: deterministicPick(EMPLOYMENT_TYPES, index),
       dateOfJoining: deterministicJoinDate(index),
       managerName: `Manager ${index % 50}`,
-      status: deterministicPick([...STATUSES], index),
+      status: deterministicPick(STATUSES, index),
     };
   });
 }

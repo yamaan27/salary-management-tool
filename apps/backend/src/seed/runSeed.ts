@@ -1,12 +1,16 @@
 import { generateEmployees } from './generateEmployees';
 
-type RunSeedParams = {
-  db: {
-    employee: {
-      deleteMany: () => Promise<unknown>;
-      createMany: (args: { data: unknown[] }) => Promise<unknown>;
-    };
+type SeedEmployee = ReturnType<typeof generateEmployees>[number];
+
+type SeedDb = {
+  employee: {
+    deleteMany(): Promise<unknown>;
+    createMany(args: { data: SeedEmployee[] }): Promise<unknown>;
   };
+};
+
+type RunSeedParams = {
+  db: SeedDb;
   firstNames: string[];
   lastNames: string[];
   count: number;
