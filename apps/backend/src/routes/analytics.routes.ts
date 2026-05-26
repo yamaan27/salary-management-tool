@@ -1,3 +1,37 @@
-import { Express } from 'express';
+import { Express, Request, Response } from 'express';
 
-export function registerAnalyticsRoutes(app: Express, service: unknown): void {}
+interface AnalyticsService {
+  getCountryInsights(country: string): Promise<unknown>;
+  getAverageSalaryByJobTitle(params: {
+    country: string;
+    jobTitle: string;
+  }): Promise<unknown>;
+}
+
+export function registerAnalyticsRoutes(
+  app: Express,
+  service: AnalyticsService,
+): void {
+  app.get(
+    '/api/analytics/country/:country',
+    async (req: Request, res: Response) => {
+      const country = String(req.params.country);
+
+      const insights = await service.getCountryInsights(country);
+
+      res.status(200).json(insights);
+    },
+  );
+
+  app.get('/api/analytics/job-title', async (req: Request, res: Response) => {
+    const country = String(req.query.country);
+    const jobTitle = String(req.query.jobTitle);
+
+    const result = await service.getAverageSalaryByJobTitle({
+      country,
+      jobTitle,
+    });
+
+    res.status(200).json(result);
+  });
+}
