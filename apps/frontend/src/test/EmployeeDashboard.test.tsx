@@ -121,4 +121,42 @@ describe('EmployeeDashboard', () => {
       );
     });
   });
+
+  it('searches employees', async () => {
+    const user = userEvent.setup();
+
+    render(<EmployeeDashboard />);
+
+    await screen.findByText('John Doe');
+
+    await user.type(screen.getByPlaceholderText(/search employees/i), 'John');
+
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    await waitFor(() => {
+      expect(mockedApi.fetchEmployees).toHaveBeenCalledWith(
+        expect.objectContaining({
+          search: 'John',
+        }),
+      );
+    });
+  });
+
+  it('changes page', async () => {
+    const user = userEvent.setup();
+
+    render(<EmployeeDashboard />);
+
+    await screen.findByText('John Doe');
+
+    await user.click(screen.getByRole('button', { name: /next/i }));
+
+    await waitFor(() => {
+      expect(mockedApi.fetchEmployees).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 2,
+        }),
+      );
+    });
+  });
 });

@@ -126,4 +126,34 @@ describe('API client', () => {
 
     expect(result.avgSalary).toBe(1800000);
   });
+
+  it('fetches employees with query params', async () => {
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        data: [],
+        total: 0,
+      },
+    });
+
+    const result = await fetchEmployees({
+      page: 2,
+      limit: 20,
+      search: 'John',
+      country: 'India',
+    });
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:4000/api/employees',
+      {
+        params: {
+          page: 2,
+          limit: 20,
+          search: 'John',
+          country: 'India',
+        },
+      },
+    );
+
+    expect(result.total).toBe(0);
+  });
 });
