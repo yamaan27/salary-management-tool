@@ -24,6 +24,7 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     const created = await this.db.employee.create({
       data: {
         ...employee,
+        currency: 'INR',
         dateOfJoining: new Date(employee.dateOfJoining),
       },
     });

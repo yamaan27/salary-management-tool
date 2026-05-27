@@ -4,7 +4,7 @@ type GenerateEmployeesParams = {
   lastNames: string[];
 };
 
-const COUNTRIES = ['India', 'United States', 'Germany', 'Canada', 'Singapore'];
+const COUNTRIES = ['India'];
 
 const JOB_TITLES = [
   'Software Engineer',
@@ -16,6 +16,20 @@ const JOB_TITLES = [
   'QA Engineer',
 ];
 
+const salaryBands: Record<string, [number, number]> = {
+  Intern: [200000, 500000],
+  'HR Manager': [800000, 1500000],
+  'Data Analyst': [600000, 1400000],
+  'Software Engineer': [1000000, 2500000],
+  'Senior Software Engineer': [1800000, 4000000],
+  'Engineering Manager': [2500000, 6000000],
+  'Product Manager': [1800000, 4500000],
+  Designer: [700000, 1800000],
+  'Backend Engineer': [1200000, 3000000],
+  'Frontend Engineer': [1000000, 2800000],
+  'DevOps Engineer': [1500000, 3500000],
+};
+
 const DEPARTMENTS = ['Engineering', 'Product', 'HR', 'Operations', 'Finance'];
 
 const EMPLOYMENT_TYPES = ['FULL_TIME', 'CONTRACT', 'INTERN'] as const;
@@ -26,8 +40,12 @@ function deterministicPick<T>(items: readonly T[], index: number): T {
   return items[index % items.length];
 }
 
-function deterministicSalary(index: number): number {
-  return 500000 + (index % 25) * 100000;
+function deterministicSalary(jobTitle: string, index: number): number {
+  const [minSalary, maxSalary] = salaryBands[jobTitle] ?? [500000, 1500000];
+
+  const spread = maxSalary - minSalary;
+
+  return minSalary + (index % spread);
 }
 
 function deterministicJoinDate(index: number): Date {
@@ -46,15 +64,16 @@ export function generateEmployees({
   return Array.from({ length: count }, (_, index) => {
     const firstName = deterministicPick(firstNames, index);
     const lastName = deterministicPick(lastNames, index * 7);
+    const jobTitle = deterministicPick(JOB_TITLES, index);
 
     return {
       employeeId: `EMP${String(index + 1).padStart(6, '0')}`,
       fullName: `${firstName} ${lastName}`,
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index}@example.com`,
-      jobTitle: deterministicPick(JOB_TITLES, index),
+      jobTitle,
       department: deterministicPick(DEPARTMENTS, index),
       country: deterministicPick(COUNTRIES, index),
-      salary: deterministicSalary(index),
+      salary: deterministicSalary(jobTitle, index),
       currency: 'INR',
       employmentType: deterministicPick(EMPLOYMENT_TYPES, index),
       dateOfJoining: deterministicJoinDate(index),

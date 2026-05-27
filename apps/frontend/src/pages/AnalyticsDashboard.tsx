@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { fetchCountryInsights, fetchJobTitleInsights } from '../api/client';
+import {
+  fetchCountryInsights,
+  fetchJobTitleInsights,
+  fetchEmployees,
+} from '../api/client';
+import { toast } from 'sonner';
 
 interface CountryInsights {
   minSalary: number;
@@ -18,6 +23,7 @@ interface JobTitleInsights {
 export function AnalyticsDashboard() {
   const [country] = useState('India');
   const [jobTitle, setJobTitle] = useState('');
+  const [jobTitles, setJobTitles] = useState<string[]>([]);
 
   const [countryInsights, setCountryInsights] =
     useState<CountryInsights | null>(null);
@@ -30,97 +36,169 @@ export function AnalyticsDashboard() {
     setCountryInsights(result);
   }
 
+  async function loadJobTitles() {
+    try {
+      const response = await fetchEmployees({
+        page: 1,
+        limit: 2000,
+        search: '',
+      });
+
+      const uniqueTitles = Array.from(
+        new Set(
+          response.data.map((employee) => employee.jobTitle).filter(Boolean),
+        ),
+      ).sort();
+
+      setJobTitles(uniqueTitles);
+    } catch {
+      toast.error('Failed to load job titles');
+    }
+  }
+
   async function loadJobTitleInsights() {
     if (!jobTitle.trim()) {
+      toast.error('Enter a job title');
       return;
     }
 
-    const result = await fetchJobTitleInsights(country, jobTitle);
-
-    setJobTitleInsights(result);
+    try {
+      const result = await fetchJobTitleInsights(country, jobTitle);
+      setJobTitleInsights(result);
+      toast.success('Insights loaded');
+    } catch {
+      toast.error('Failed to load insights');
+    }
   }
 
   useEffect(() => {
     loadCountryInsights();
+    loadJobTitles();
   }, []);
 
+  function formatCurrency(value: number) {
+    if (value >= 10000000) {
+      return `₹ ${(value / 10000000).toFixed(1)}Cr`;
+    }
+
+    if (value >= 100000) {
+      return `₹ ${(value / 100000).toFixed(1)}L`;
+    }
+
+    return `₹ ${value.toLocaleString('en-IN')}`;
+  }
+
   return (
-    <div>
-      <h1>Salary Insights</h1>
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          marginBottom: '24px',
-          alignItems: 'end',
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <label htmlFor="jobTitle">Job Title</label>
-
-          <input
-            id="jobTitle"
-            value={jobTitle}
-            onChange={(event) => setJobTitle(event.target.value)}
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={loadJobTitleInsights}
-          style={{
-            background: '#2563eb',
-            color: 'white',
-          }}
-        >
-          Load Insights
-        </button>
+        <p className="mt-2 text-slate-500">
+          Executive compensation insights across workforce data.
+        </p>
       </div>
 
+      {/* Search Card */}
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold">Salary Intelligence</h2>
+
+          <p className="text-sm text-slate-500">
+            Analyze compensation benchmarks by job title.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+          <div className="flex-1">
+            <label
+              htmlFor="jobTitle"
+              className="mb-2 block text-sm font-medium text-slate-700"
+            >
+              Job Title
+            </label>
+
+            <select
+              id="jobTitle"
+              value={jobTitle}
+              onChange={(event) => setJobTitle(event.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 shadow-sm outline-none transition focus:border-slate-900 focus:bg-white"
+            >
+              <option value="">Select a job title</option>
+
+              {jobTitles.map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={loadJobTitleInsights}
+            className="rounded-2xl bg-slate-900 px-6 py-3 font-medium text-white shadow-md transition hover:opacity-90"
+          >
+            Load Insights
+          </button>
+        </div>
+      </div>
+
+      {/* Country KPI Cards */}
       {countryInsights && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '16px',
-          }}
-        >
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[
-            ['Min Salary', countryInsights.minSalary],
-            ['Max Salary', countryInsights.maxSalary],
+            ['Minimum Salary', countryInsights.minSalary],
+            ['Maximum Salary', countryInsights.maxSalary],
             ['Average Salary', countryInsights.avgSalary],
             ['Median Salary', countryInsights.medianSalary],
-            ['Employees', countryInsights.employeeCount],
+            ['Employee Count', countryInsights.employeeCount],
           ].map(([label, value]) => (
             <div
               key={label}
-              style={{
-                background: 'white',
-                padding: '20px',
-                borderRadius: '12px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              }}
+              className="flex min-h-[150px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <p>{label}</p>
-              <h2>{value}</h2>
+              <p className="text-sm font-medium text-slate-500">{label}</p>
+
+              <h2 className="mt-3 whitespace-nowrap text-2xl font-bold tracking-tight xl:text-3xl">
+                {typeof value === 'number' && label !== 'Employee Count'
+                  ? formatCurrency(value)
+                  : Number(value).toLocaleString('en-IN')}
+              </h2>
             </div>
           ))}
         </div>
       )}
 
+      {/* Job Title Insights */}
       {jobTitleInsights && (
-        <div
-          style={{
-            marginTop: '24px',
-            background: 'white',
-            padding: '20px',
-            borderRadius: '12px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-          }}
-        >
-          <p>Average salary for {jobTitleInsights.jobTitle}</p>
-          <h2>{jobTitleInsights.avgSalary}</h2>
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-4">
+            <p className="text-sm font-medium text-slate-500">
+              Compensation Benchmark
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold tracking-tight">
+              {jobTitleInsights.jobTitle}
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl bg-slate-50 p-6">
+              <p className="text-sm text-slate-500">Country</p>
+              <p className="mt-2 text-xl font-semibold">
+                {jobTitleInsights.country}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-slate-50 p-6">
+              <p className="text-sm text-slate-500">Average Salary</p>
+
+              <p className="mt-2 text-xl font-semibold">
+                {formatCurrency(jobTitleInsights.avgSalary)}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

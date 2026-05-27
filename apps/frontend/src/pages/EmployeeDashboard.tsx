@@ -10,6 +10,7 @@ import { EmployeeTable } from '../components/employee/EmployeeTable';
 import { EmployeeForm } from '../components/employee/EmployeeForm';
 import { z } from 'zod';
 import { employeeFormSchema } from '../components/employee/employeeForm.schema';
+import { toast } from 'sonner';
 
 type EmployeeFormInput = z.input<typeof employeeFormSchema>;
 
@@ -46,24 +47,35 @@ export function EmployeeDashboard() {
   }
 
   const handleSubmit = async (payload: EmployeeFormInput) => {
-    const normalizedPayload = {
-      ...payload,
-      salary: Number(payload.salary),
-    };
+    try {
+      const normalizedPayload = {
+        ...payload,
+        salary: Number(payload.salary),
+      };
 
-    if (editingEmployee) {
-      await updateEmployee(editingEmployee.id, normalizedPayload);
-    } else {
-      await createEmployee(normalizedPayload);
+      if (editingEmployee) {
+        await updateEmployee(editingEmployee.id, normalizedPayload);
+        toast.success('Employee updated successfully');
+      } else {
+        await createEmployee(normalizedPayload);
+        toast.success('Employee created successfully');
+      }
+
+      setEditingEmployee(null);
+      await loadEmployees();
+    } catch {
+      toast.error('Failed to save employee');
     }
-
-    setEditingEmployee(null);
-    await loadEmployees();
   };
 
   async function handleDelete(id: string) {
-    await deleteEmployee(id);
-    await loadEmployees();
+    try {
+      await deleteEmployee(id);
+      toast.success('Employee deleted successfully');
+      await loadEmployees();
+    } catch {
+      toast.error('Failed to delete employee');
+    }
   }
 
   function handleEdit(employee: Employee) {
@@ -71,13 +83,19 @@ export function EmployeeDashboard() {
   }
 
   async function handleSearch() {
-    setPage(1);
-    setSearch(searchInput);
+    try {
+      setPage(1);
+      setSearch(searchInput);
 
-    await loadEmployees({
-      page: 1,
-      search: searchInput,
-    });
+      await loadEmployees({
+        page: 1,
+        search: searchInput,
+      });
+
+      toast.success('Search updated');
+    } catch {
+      toast.error('Search failed');
+    }
   }
 
   async function handleNextPage() {
@@ -105,89 +123,89 @@ export function EmployeeDashboard() {
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="grid gap-6">
+        <div className="h-24 animate-pulse rounded-3xl bg-white shadow-sm" />
+        <div className="h-48 animate-pulse rounded-3xl bg-white shadow-sm" />
+        <div className="h-96 animate-pulse rounded-3xl bg-white shadow-sm" />
+      </div>
+    );
   }
-
   return (
     <div>
-      <h1
-        style={{
-          marginTop: 0,
-          fontSize: '32px',
-        }}
-      >
-        Employee Dashboard
-      </h1>
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
+          <p className="mt-2 text-slate-500">
+            Manage workforce records, compensation, and employment details.
+          </p>
+        </div>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          marginBottom: '24px',
-        }}
-      >
-        <input
-          placeholder="Search employees"
-          value={searchInput}
-          onChange={(event) => setSearchInput(event.target.value)}
-        />
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input
+            placeholder="Search employees..."
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            className="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm outline-none transition focus:border-slate-900"
+          />
 
-        <button
-          type="button"
-          onClick={handleSearch}
-          style={{
-            background: '#2563eb',
-            color: 'white',
-          }}
-        >
-          Search
-        </button>
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="rounded-2xl bg-slate-900 px-6 py-3 font-medium text-white shadow-md transition hover:opacity-90"
+          >
+            Search
+          </button>
+        </div>
       </div>
 
-      <div
-        style={{
-          background: 'white',
-          padding: '24px',
-          borderRadius: '12px',
-          marginBottom: '24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        }}
-      >
+      {/* Form Card */}
+      <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">
+              {editingEmployee ? 'Edit Employee' : 'Add Employee'}
+            </h2>
+            <p className="text-sm text-slate-500">
+              Maintain accurate workforce records.
+            </p>
+          </div>
+        </div>
+
         <EmployeeForm
           onSubmit={handleSubmit}
           initialValues={editingEmployee ?? undefined}
         />
       </div>
 
-      <div
-        style={{
-          background: 'white',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        }}
-      >
-        <EmployeeTable
-          employees={employees}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      </div>
+      {/* Table */}
+      <EmployeeTable
+        employees={employees}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '24px',
-        }}
-      >
-        <button type="button" onClick={handlePreviousPage}>
+      {/* Pagination */}
+      <div className="mt-8 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={handlePreviousPage}
+          disabled={page === 1}
+          className="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm transition disabled:opacity-40"
+        >
           Previous
         </button>
 
-        <span>Page {page}</span>
+        <div className="rounded-2xl bg-white px-6 py-3 shadow-sm">
+          Page {page}
+        </div>
 
-        <button type="button" onClick={handleNextPage}>
+        <button
+          type="button"
+          onClick={handleNextPage}
+          className="rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm transition hover:bg-slate-50"
+        >
           Next
         </button>
       </div>
