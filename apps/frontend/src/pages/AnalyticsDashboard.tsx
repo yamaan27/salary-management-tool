@@ -44,11 +44,11 @@ export function AnalyticsDashboard() {
         search: '',
       });
 
-      const uniqueTitles = Array.from(
-        new Set(
-          response.data.map((employee) => employee.jobTitle).filter(Boolean),
-        ),
-      ).sort();
+      const titles = response.data
+        .map((employee: { jobTitle: string }) => employee.jobTitle)
+        .filter((title: string) => title.length > 0);
+
+      const uniqueTitles = [...new Set<string>(titles)].sort();
 
       setJobTitles(uniqueTitles);
     } catch {

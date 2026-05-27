@@ -1,9 +1,8 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import {
   BarChart3,
   Briefcase,
   Building2,
-  Search,
   UserCircle2,
 } from 'lucide-react';
 
