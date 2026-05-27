@@ -6,29 +6,58 @@ export function AppLayout() {
       style={{
         display: 'flex',
         minHeight: '100vh',
-        fontFamily: 'Arial, sans-serif',
       }}
     >
       <aside
         style={{
-          width: '240px',
-          padding: '24px',
-          borderRight: '1px solid #ddd',
-          background: '#f8f9fa',
+          width: '260px',
+          background: '#111827',
+          color: 'white',
+          padding: '32px 24px',
         }}
       >
-        <h2>Salary Manager</h2>
+        <h2
+          style={{
+            marginTop: 0,
+            fontSize: '22px',
+          }}
+        >
+          Salary Manager
+        </h2>
 
         <nav
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '12px',
-            marginTop: '24px',
+            marginTop: '32px',
           }}
         >
-          <NavLink to="/employees">Employees</NavLink>
-          <NavLink to="/analytics">Analytics</NavLink>
+          <NavLink
+            to="/employees"
+            style={({ isActive }) => ({
+              color: 'white',
+              textDecoration: 'none',
+              padding: '12px',
+              borderRadius: '8px',
+              background: isActive ? '#2563eb' : 'transparent',
+            })}
+          >
+            Employees
+          </NavLink>
+
+          <NavLink
+            to="/analytics"
+            style={({ isActive }) => ({
+              color: 'white',
+              textDecoration: 'none',
+              padding: '12px',
+              borderRadius: '8px',
+              background: isActive ? '#2563eb' : 'transparent',
+            })}
+          >
+            Analytics
+          </NavLink>
         </nav>
       </aside>
 

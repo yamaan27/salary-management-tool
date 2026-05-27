@@ -29,6 +29,11 @@ export function EmployeeForm({ onSubmit, initialValues }: EmployeeFormProps) {
       onSubmit={handleSubmit((data) => {
         onSubmit(data);
       })}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '16px',
+      }}
     >
       <div>
         <label htmlFor="fullName">Full Name</label>
@@ -86,7 +91,16 @@ export function EmployeeForm({ onSubmit, initialValues }: EmployeeFormProps) {
         <input id="dateOfJoining" type="date" {...register('dateOfJoining')} />
       </div>
 
-      <button type="submit">Save</button>
+      <button
+        type="submit"
+        style={{
+          background: '#16a34a',
+          color: 'white',
+          alignSelf: 'end',
+        }}
+      >
+        Save
+      </button>
     </form>
   );
 }

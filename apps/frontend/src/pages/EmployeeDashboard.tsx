@@ -107,32 +107,77 @@ export function EmployeeDashboard() {
 
   return (
     <div>
-      <h1>Employee Dashboard</h1>
+      <h1
+        style={{
+          marginTop: 0,
+          fontSize: '32px',
+        }}
+      >
+        Employee Dashboard
+      </h1>
 
-      <div>
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          marginBottom: '24px',
+        }}
+      >
         <input
           placeholder="Search employees"
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
         />
 
-        <button type="button" onClick={handleSearch}>
+        <button
+          type="button"
+          onClick={handleSearch}
+          style={{
+            background: '#2563eb',
+            color: 'white',
+          }}
+        >
           Search
         </button>
       </div>
 
-      <EmployeeForm
-        onSubmit={handleSubmit}
-        initialValues={editingEmployee ?? undefined}
-      />
+      <div
+        style={{
+          background: 'white',
+          padding: '24px',
+          borderRadius: '12px',
+          marginBottom: '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        }}
+      >
+        <EmployeeForm
+          onSubmit={handleSubmit}
+          initialValues={editingEmployee ?? undefined}
+        />
+      </div>
 
-      <EmployeeTable
-        employees={employees}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <div
+        style={{
+          background: 'white',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        }}
+      >
+        <EmployeeTable
+          employees={employees}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </div>
 
-      <div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '24px',
+        }}
+      >
         <button type="button" onClick={handlePreviousPage}>
           Previous
         </button>
