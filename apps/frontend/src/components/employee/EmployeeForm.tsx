@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { employeeFormSchema } from './employeeForm.schema';
-import type { EmployeeFormValues } from './employeeForm.schema';
+import { z } from 'zod';
 
+type EmployeeFormValues = z.input<typeof employeeFormSchema>;
 interface EmployeeFormProps {
   onSubmit: (data: EmployeeFormValues) => void;
   initialValues?: Partial<EmployeeFormValues>;
@@ -13,8 +14,8 @@ export function EmployeeForm({ onSubmit, initialValues }: EmployeeFormProps) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
+    reset,
   } = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
   });
@@ -25,11 +26,14 @@ export function EmployeeForm({ onSubmit, initialValues }: EmployeeFormProps) {
     }
   }, [initialValues, reset]);
 
+const submitHandler: SubmitHandler<EmployeeFormValues> = (data) => {
+  onSubmit(data);
+  reset();
+};
+
   return (
     <form
-      onSubmit={handleSubmit((data) => {
-        onSubmit(data);
-      })}
+      onSubmit={handleSubmit(submitHandler)}
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',

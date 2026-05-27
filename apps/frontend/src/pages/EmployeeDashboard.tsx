@@ -8,7 +8,10 @@ import {
 import type { Employee } from '../types/employee';
 import { EmployeeTable } from '../components/employee/EmployeeTable';
 import { EmployeeForm } from '../components/employee/EmployeeForm';
-import type { EmployeeFormValues } from '../components/employee/employeeForm.schema';
+import { z } from 'zod';
+import { employeeFormSchema } from '../components/employee/employeeForm.schema';
+
+type EmployeeFormInput = z.input<typeof employeeFormSchema>;
 
 export function EmployeeDashboard() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -42,21 +45,21 @@ export function EmployeeDashboard() {
     setLoading(false);
   }
 
-  async function handleSubmit(payload: EmployeeFormValues) {
-    const finalPayload = {
+  const handleSubmit = async (payload: EmployeeFormInput) => {
+    const normalizedPayload = {
       ...payload,
-      currency: 'INR',
+      salary: Number(payload.salary),
     };
 
     if (editingEmployee) {
-      await updateEmployee(editingEmployee.id, finalPayload);
-      setEditingEmployee(null);
+      await updateEmployee(editingEmployee.id, normalizedPayload);
     } else {
-      await createEmployee(finalPayload);
+      await createEmployee(normalizedPayload);
     }
 
+    setEditingEmployee(null);
     await loadEmployees();
-  }
+  };
 
   async function handleDelete(id: string) {
     await deleteEmployee(id);
