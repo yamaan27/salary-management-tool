@@ -1,0 +1,26 @@
+# dependencies
+node_modules
+**/node_modules
+
+# build outputs
+dist
+**/dist
+coverage
+.turbo
+
+# env
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+
+# prisma generated temp
+apps/backend/node_modules/.prisma
+
+# logs
+*.log
+
+packages/shared/dist
+packages/shared/node_modules

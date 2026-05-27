@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { employeeFormSchema, EmployeeFormValues } from './employeeForm.schema';
+import { employeeFormSchema } from './employeeForm.schema';
+import type { EmployeeFormValues } from './employeeForm.schema';
 
 interface EmployeeFormProps {
   onSubmit: (data: EmployeeFormValues) => void;

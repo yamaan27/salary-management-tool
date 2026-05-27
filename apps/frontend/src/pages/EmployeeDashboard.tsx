@@ -5,10 +5,10 @@ import {
   updateEmployee,
   deleteEmployee,
 } from '../api/client';
-import { Employee } from '../types/employee';
+import type { Employee } from '../types/employee';
 import { EmployeeTable } from '../components/employee/EmployeeTable';
 import { EmployeeForm } from '../components/employee/EmployeeForm';
-import { EmployeeFormValues } from '../components/employee/employeeForm.schema';
+import type { EmployeeFormValues } from '../components/employee/employeeForm.schema';
 
 export function EmployeeDashboard() {
   const [employees, setEmployees] = useState<Employee[]>([]);
