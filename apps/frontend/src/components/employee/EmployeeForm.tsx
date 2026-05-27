@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import type { infer as ZodInfer } from 'zod';
 import { employeeFormSchema } from './employeeForm.schema';
 
-type EmployeeFormValues = z.input<typeof employeeFormSchema>;
+type EmployeeFormValues = ZodInfer<typeof employeeFormSchema>;
 
 interface EmployeeFormProps {
   onSubmit: (data: EmployeeFormValues) => void;
