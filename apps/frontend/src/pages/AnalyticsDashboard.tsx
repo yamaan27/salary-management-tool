@@ -33,9 +33,11 @@ const [country, setCountry] = useState('');
     useState<JobTitleInsights | null>(null);
 
   async function loadCountryInsights() {
-    const endpoint = country
-      ? `http://localhost:4000/api/analytics/country/${country}`
-      : `http://localhost:4000/api/analytics/country`;
+   const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+   const endpoint = country
+     ? `${API_BASE_URL}/api/analytics/country/${country}`
+     : `${API_BASE_URL}/api/analytics/country`;
 
     const response = await fetch(endpoint);
 
