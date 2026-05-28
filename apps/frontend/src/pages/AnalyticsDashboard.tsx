@@ -36,8 +36,8 @@ const [country, setCountry] = useState('');
    const API_BASE_URL = import.meta.env.VITE_API_URL;
 
    const endpoint = country
-     ? `${API_BASE_URL}/api/analytics/country/${country}`
-     : `${API_BASE_URL}/api/analytics/country`;
+     ? `${API_BASE_URL}/analytics/country/${country}`
+     : `${API_BASE_URL}/analytics/country`;
 
     const response = await fetch(endpoint);
 
