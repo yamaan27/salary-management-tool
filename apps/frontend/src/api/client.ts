@@ -38,9 +38,11 @@ export async function deleteEmployee(id: string) {
 }
 
 export async function fetchCountryInsights(country: string) {
-  const response = await axios.get(
-    `${API_BASE_URL}/analytics/country/${country}`,
-  );
+  const endpoint = country
+    ? `${API_BASE_URL}/analytics/country/${country}`
+    : `${API_BASE_URL}/analytics/country`;
+
+  const response = await axios.get(endpoint);
 
   return response.data;
 }

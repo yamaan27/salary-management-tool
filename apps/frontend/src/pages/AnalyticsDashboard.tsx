@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  fetchCountryInsights,
   fetchJobTitleInsights,
   fetchEmployees,
 } from '../api/client';
@@ -33,17 +34,13 @@ const [country, setCountry] = useState('');
     useState<JobTitleInsights | null>(null);
 
   async function loadCountryInsights() {
-   const API_BASE_URL = import.meta.env.VITE_API_URL;
+    try {
+      const result = await fetchCountryInsights(country);
 
-   const endpoint = country
-     ? `${API_BASE_URL}/analytics/country/${country}`
-     : `${API_BASE_URL}/analytics/country`;
-
-    const response = await fetch(endpoint);
-
-    const result = await response.json();
-
-    setCountryInsights(result);
+      setCountryInsights(result);
+    } catch {
+      toast.error('Failed to load analytics');
+    }
   }
 
   async function loadJobTitles() {
