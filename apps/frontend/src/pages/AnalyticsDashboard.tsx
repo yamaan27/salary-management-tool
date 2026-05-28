@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  fetchCountryInsights,
   fetchJobTitleInsights,
   fetchEmployees,
 } from '../api/client';
