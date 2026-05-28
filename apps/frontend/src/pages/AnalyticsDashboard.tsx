@@ -20,8 +20,10 @@ interface JobTitleInsights {
   avgSalary: number;
 }
 
+const COUNTRIES = ['India', 'United States', 'Germany', 'Canada', 'Singapore'];
+
 export function AnalyticsDashboard() {
-  const [country] = useState('India');
+const [country, setCountry] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobTitles, setJobTitles] = useState<string[]>([]);
 
@@ -32,7 +34,14 @@ export function AnalyticsDashboard() {
     useState<JobTitleInsights | null>(null);
 
   async function loadCountryInsights() {
-    const result = await fetchCountryInsights(country);
+    const endpoint = country
+      ? `http://localhost:4000/api/analytics/country/${country}`
+      : `http://localhost:4000/api/analytics/country`;
+
+    const response = await fetch(endpoint);
+
+    const result = await response.json();
+
     setCountryInsights(result);
   }
 
@@ -73,6 +82,9 @@ export function AnalyticsDashboard() {
 
   useEffect(() => {
     loadCountryInsights();
+  }, [country]);
+
+  useEffect(() => {
     loadJobTitles();
   }, []);
 
@@ -110,6 +122,25 @@ export function AnalyticsDashboard() {
         </div>
 
         <div className="flex flex-col gap-4 md:flex-row md:items-end">
+          <div className="flex-1">
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Country
+            </label>
+
+            <select
+              value={country}
+              onChange={(event) => setCountry(event.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 shadow-sm outline-none transition focus:border-slate-900 focus:bg-white"
+            >
+              <option value="">All Countries</option>
+
+              {COUNTRIES.map((countryOption) => (
+                <option key={countryOption} value={countryOption}>
+                  {countryOption}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex-1">
             <label
               htmlFor="jobTitle"

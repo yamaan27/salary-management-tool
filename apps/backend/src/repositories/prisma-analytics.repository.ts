@@ -17,11 +17,14 @@ export class PrismaAnalyticsRepository implements AnalyticsRepository {
   ) {}
 
   async getCountrySalaryStats(country: string): Promise<CountrySalaryStats> {
+    const whereClause = country
+      ? {
+          country,
+        }
+      : {};
     const [aggregates, salaries] = await Promise.all([
       this.db.employee.aggregate({
-        where: {
-          country,
-        },
+        where: whereClause,
         _min: {
           salary: true,
         },
@@ -36,9 +39,7 @@ export class PrismaAnalyticsRepository implements AnalyticsRepository {
         },
       }),
       this.db.employee.findMany({
-        where: {
-          country,
-        },
+        where: whereClause,
         select: {
           salary: true,
         },

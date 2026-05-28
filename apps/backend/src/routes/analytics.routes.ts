@@ -22,6 +22,11 @@ export function registerAnalyticsRoutes(
       res.status(200).json(insights);
     },
   );
+  app.get('/api/analytics/country', async (_req: Request, res: Response) => {
+    const insights = await service.getCountryInsights('');
+
+    res.status(200).json(insights);
+  });
 
   app.get('/api/analytics/job-title', async (req: Request, res: Response) => {
     const country = String(req.query.country);

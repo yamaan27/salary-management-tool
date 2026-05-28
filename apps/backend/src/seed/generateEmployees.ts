@@ -4,7 +4,8 @@ type GenerateEmployeesParams = {
   lastNames: string[];
 };
 
-const COUNTRIES = ['India'];
+// const COUNTRIES = ['India'];
+const COUNTRIES = ['India', 'United States', 'Germany', 'Canada', 'Singapore'];
 
 const JOB_TITLES = [
   'Software Engineer',
