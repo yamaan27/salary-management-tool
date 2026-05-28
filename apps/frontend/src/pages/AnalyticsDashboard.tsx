@@ -64,6 +64,10 @@ const [country, setCountry] = useState('');
   }
 
   async function loadJobTitleInsights() {
+    if (!country) {
+      toast.error('Select a country');
+      return;
+    }
     if (!jobTitle.trim()) {
       toast.error('Enter a job title');
       return;
